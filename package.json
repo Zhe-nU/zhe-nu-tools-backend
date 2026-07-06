@@ -6,7 +6,10 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "auth:generate": "npx auth@latest generate --config ./src/lib/auth.ts",
+    "auth:migrate": "npx auth@latest migrate --config ./src/lib/auth.ts",
     "build": "nest build",
+    "db:migrate": "sequelize-cli db:migrate",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

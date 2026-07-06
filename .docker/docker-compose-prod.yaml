@@ -1,0 +1,50 @@
+services:
+  backend:
+    build:
+      context: ./..
+      dockerfile: ./.docker/dockerfile.prod
+    environment:
+      - AVITO_CLIENT_ID=${AVITO_CLIENT_ID}
+      - AVITO_CLIENT_SECRET=${AVITO_CLIENT_SECRET}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+      - CLIENT_URL=${CLIENT_URL}
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}}
+      - DB_USERNAME=${DB_USERNAME}
+      - PORT=${PORT}
+      - NODE_ENV=production
+
+  auth-migrate:
+    build:
+      context: ./..
+      dockerfile: ./.docker/dockerfile.prod
+    command: npm run auth:migrate
+    environment:
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+      - CLIENT_URL=${CLIENT_URL}
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - NODE_ENV=production
+
+  db-migrate:
+    build:
+      context: ./..
+      dockerfile: ./.docker/dockerfile.prod
+    command: npm run db:migrate
+    environment:
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+      - CLIENT_URL=${CLIENT_URL}
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - NODE_ENV=production

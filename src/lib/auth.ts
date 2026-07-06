@@ -1,7 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { Pool } from 'pg';
 
-export const createAuth = () =>
+export default () =>
   betterAuth({
     database: new Pool({
       host: process.env.DB_HOST,

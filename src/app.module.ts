@@ -4,7 +4,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { AvitoSession } from './models/avitoSession.model';
 import { AvitoUser } from './models/avitoUser.model';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
-import { createAuth } from './lib/auth';
+import createAuth from './lib/auth';
 import { User } from './models/user.model';
 import { ConfigModule } from '@nestjs/config';
 import { Bot } from './models/bot.model';
