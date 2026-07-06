@@ -69,7 +69,7 @@ jobs:
           CLIENT_URL: ${{ vars.CLIENT_URL }}
           PORT: ${{ vars.PORT }}
         run: |
-          docker compose -f ./.docker/docker-compose-prod.yaml run --rm auth-migrate --build
+          docker compose -f ./.docker/docker-compose-prod.yaml run --rm --build auth-migrate
 
   migrate:
     needs: auth-migrate
@@ -95,7 +95,7 @@ jobs:
           CLIENT_URL: ${{ vars.CLIENT_URL }}
           PORT: ${{ vars.PORT }}
         run: |
-          docker compose -f ./.docker/docker-compose-prod.yaml run --rm db-migrate --build
+          docker compose -f ./.docker/docker-compose-prod.yaml run --rm --build db-migrate
 
   build:
     needs: migrate
