@@ -56,6 +56,8 @@ jobs:
 
       - name: Migrate
         env:
+          AVITO_CLIENT_ID: ${{ secrets.AVITO_CLIENT_ID }}
+          AVITO_CLIENT_SECRET: ${{ secrets.AVITO_CLIENT_SECRET }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_NAME: ${{ secrets.DB_NAME }}
@@ -65,6 +67,7 @@ jobs:
 
           BETTER_AUTH_URL: ${{ vars.BETTER_AUTH_URL }}
           CLIENT_URL: ${{ vars.CLIENT_URL }}
+          PORT: ${{ vars.PORT }}
         run: |
           docker compose -f ./.docker/docker-compose-prod.yaml run --rm auth-migrate --build
 
@@ -79,6 +82,8 @@ jobs:
 
       - name: Migrate
         env:
+          AVITO_CLIENT_ID: ${{ secrets.AVITO_CLIENT_ID }}
+          AVITO_CLIENT_SECRET: ${{ secrets.AVITO_CLIENT_SECRET }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_NAME: ${{ secrets.DB_NAME }}
@@ -88,6 +93,7 @@ jobs:
 
           BETTER_AUTH_URL: ${{ vars.BETTER_AUTH_URL }}
           CLIENT_URL: ${{ vars.CLIENT_URL }}
+          PORT: ${{ vars.PORT }}
         run: |
           docker compose -f ./.docker/docker-compose-prod.yaml run --rm db-migrate --build
 
