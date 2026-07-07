@@ -7,7 +7,7 @@ export class AvitoCallbackController {
   constructor(private readonly avitoCallbackService: AvitoCallbackService) {}
 
   @Get()
-  @Redirect('http://localhost:3000/dashboard')
+  @Redirect(`${process.env.CLIENT_URL}/dashboard`)
   getBotSettings(
     @Query('code') code: string,
     @Session() session: UserSession,
