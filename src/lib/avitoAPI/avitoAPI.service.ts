@@ -231,4 +231,23 @@ export class AvitoAPIService {
       ),
     );
   }
+
+  async unsubscribeWebhook(avitoId: string) {
+    const accessToken =
+      await this.avitoSessionService.getAccessTokenByAvitoId(avitoId);
+
+    await firstValueFrom(
+      this.httpService.post(
+        'https://api.avito.ru/messenger/v1/webhook/unsubscribe',
+        {
+          url: process.env.AVITO_WEBHOOK_BASE_URL,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      ),
+    );
+  }
 }

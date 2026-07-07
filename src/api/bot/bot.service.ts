@@ -1,11 +1,26 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Bot } from 'src/models/bot.model';
 import { UpdateBotSettingsDto } from './dto/updateBotSettings.dto';
+import { AvitoAPIService } from 'src/lib/avitoAPI/avitoAPI.service';
+import { AvitoUser } from 'src/models/avitoUser.model';
 
 @Injectable()
 export class BotService {
-  constructor(@InjectModel(Bot) private botModel: typeof Bot) {}
+  constructor(
+    @InjectModel(AvitoUser) private avitoUserModel: typeof AvitoUser,
+    @InjectModel(Bot) private botModel: typeof Bot,
+    @Inject() private readonly avitoAPIService: AvitoAPIService,
+  ) {}
+
+  async deleteBot(userId: string) {
+    const avitoUser = await this.avitoUserModel.findOne({ where: { userId } });
+    if (!avitoUser) throw new NotFoundException('AVITO_USER_NOT_FOUND');
+
+    await this.botModel.destroy({ where: { userId } });
+
+    await this.avitoAPIService.unsubscribeWebhook(avitoUser.avitoId.toString());
+  }
 
   async getBot(userId: string) {
     return await this.botModel.findOne({ where: { userId } });
