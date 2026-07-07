@@ -7,11 +7,15 @@ export class AvitoCallbackController {
   constructor(private readonly avitoCallbackService: AvitoCallbackService) {}
 
   @Get()
-  @Redirect(`${process.env.CLIENT_URL}/dashboard`)
-  getBotSettings(
+  @Redirect()
+  async getBotSettings(
     @Query('code') code: string,
     @Session() session: UserSession,
-  ): {} {
-    return this.avitoCallbackService.oauthAvito(session.user.id, code);
+  ) {
+    await this.avitoCallbackService.oauthAvito(session.user.id, code);
+
+    return {
+      url: `${process.env.CLIENT_URL}/dashboard/manage-bot`,
+    };
   }
 }
