@@ -37,16 +37,18 @@ export class AvitoAPIService {
     const accessToken =
       await this.avitoSessionService.getAccessTokenByAvitoId(avitoId);
 
-    this.httpService.post(
-      'https://api.avito.ru/messenger/v3/webhook',
-      {
-        url: `${process.env.WEBHOOK_BASE_URL}webhook/avito`,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
+    await firstValueFrom(
+      this.httpService.post(
+        'https://api.avito.ru/messenger/v3/webhook',
+        {
+          url: process.env.AVITO_WEBHOOK_BASE_URL,
         },
-      },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      ),
     );
   }
 
