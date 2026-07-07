@@ -45,6 +45,6 @@ export class AvitoCallbackService {
 
     await this.botModel.create({ userId });
 
-    await this.avitoAPIService.addWebhook(avitoUser.id);
+    await this.avitoAPIService.addWebhook(avitoUserData.avitoId.toString());
   }
 }
