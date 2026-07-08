@@ -28,7 +28,7 @@ export class AvitoSessionService {
     if (!session) return null;
 
     if (
-      dayjs(session.updatedAt).add(session.expiresIn + DELTA, 'ms') > dayjs()
+      dayjs(session.updatedAt).add(session.expiresIn + DELTA, 'ms') < dayjs()
     ) {
       const newSession = await this.avitoAPIService.refreshToken(
         session.refreshToken,
