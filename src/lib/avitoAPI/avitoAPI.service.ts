@@ -37,7 +37,7 @@ export class AvitoAPIService {
     const accessToken =
       await this.avitoSessionService.getAccessTokenByAvitoId(avitoId);
 
-    await firstValueFrom(
+    const res = await firstValueFrom(
       this.httpService.post(
         'https://api.avito.ru/messenger/v3/webhook',
         {
