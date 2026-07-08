@@ -4,7 +4,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { AvitoSession } from './models/avitoSession.model';
 import { AvitoUser } from './models/avitoUser.model';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
-import createAuth from './lib/auth';
+import { auth } from './lib/auth';
 import { User } from './models/user.model';
 import { ConfigModule } from '@nestjs/config';
 import { Bot } from './models/bot.model';
@@ -13,7 +13,7 @@ import { Bot } from './models/bot.model';
   imports: [
     ConfigModule.forRoot(),
     ApiModule,
-    AuthModule.forRoot({ auth: createAuth() }),
+    AuthModule.forRoot({ auth }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
       host: process.env.DB_HOST,
