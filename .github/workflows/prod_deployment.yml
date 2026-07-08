@@ -65,6 +65,7 @@ jobs:
           DB_PORT: ${{ secrets.DB_PORT }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
 
+          AVITO_WEBHOOK_BASE_URL: ${{ vars.AVITO_WEBHOOK_BASE_URL }}
           BETTER_AUTH_URL: ${{ vars.BETTER_AUTH_URL }}
           CLIENT_URL: ${{ vars.CLIENT_URL }}
           PORT: ${{ vars.PORT }}
@@ -91,6 +92,7 @@ jobs:
           DB_PORT: ${{ secrets.DB_PORT }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
 
+          AVITO_WEBHOOK_BASE_URL: ${{ vars.AVITO_WEBHOOK_BASE_URL }}
           BETTER_AUTH_URL: ${{ vars.BETTER_AUTH_URL }}
           CLIENT_URL: ${{ vars.CLIENT_URL }}
           PORT: ${{ vars.PORT }}
@@ -117,6 +119,7 @@ jobs:
           DB_PORT: ${{ secrets.DB_PORT }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
 
+          AVITO_WEBHOOK_BASE_URL: ${{ vars.AVITO_WEBHOOK_BASE_URL }}
           BETTER_AUTH_URL: ${{ vars.BETTER_AUTH_URL }}
           CLIENT_URL: ${{ vars.CLIENT_URL }}
           PORT: ${{ vars.PORT }}
