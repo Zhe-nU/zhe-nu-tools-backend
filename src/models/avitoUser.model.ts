@@ -17,7 +17,7 @@ export class AvitoUser extends Model {
     primaryKey: true,
     defaultValue: DataType.UUIDV4,
   })
-  declare id: string
+  declare id: string;
 
   @ForeignKey(() => User)
   @Column

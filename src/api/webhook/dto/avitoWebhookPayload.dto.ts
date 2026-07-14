@@ -24,6 +24,7 @@ export const avitoWebhookPayloadSchema = z.object({
       created: data.created,
       type: data.type,
       chatType: data.chat_type,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       content: data.content,
       itemId: data.item_id,
     })),

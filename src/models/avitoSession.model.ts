@@ -1,14 +1,17 @@
 import {
   BelongsTo,
   Column,
+  CreatedAt,
   DataType,
+  DeletedAt,
   ForeignKey,
   Model,
   Table,
+  UpdatedAt,
 } from 'sequelize-typescript';
 import { AvitoUser } from './avitoUser.model';
 
-@Table({ tableName: 'avito_session', paranoid: true, timestamps: true })
+@Table({ tableName: 'avito_session', paranoid: true })
 export class AvitoSession extends Model {
   @Column({
     type: DataType.UUID,
@@ -38,4 +41,13 @@ export class AvitoSession extends Model {
 
   @Column
   declare tokenType: string;
+
+  @CreatedAt
+  declare createdAt: Date;
+
+  @UpdatedAt
+  declare updatedAt: Date;
+
+  @DeletedAt
+  declare deletedAt: Date;
 }

@@ -34,7 +34,7 @@ export class BotService {
   }
 
   async updateBotSettings(userId: string, settings: UpdateBotSettingsDto) {
-    const [_, [bot]] = await this.botModel.update(
+    const [, [bot]] = await this.botModel.update(
       { settings },
       { where: { userId }, returning: true },
     );

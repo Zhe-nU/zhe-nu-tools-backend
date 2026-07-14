@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, HasOne } from 'sequelize-typescript';
+import { Table, Column, Model, HasOne, DataType } from 'sequelize-typescript';
 import { AvitoUser } from './avitoUser.model';
 
 @Table({
@@ -6,6 +6,13 @@ import { AvitoUser } from './avitoUser.model';
   timestamps: false,
 })
 export class User extends Model {
+  @Column({
+    type: DataType.UUID,
+    primaryKey: true,
+    defaultValue: DataType.UUIDV4,
+  })
+  declare id: string;
+
   @Column
   declare email: string;
 

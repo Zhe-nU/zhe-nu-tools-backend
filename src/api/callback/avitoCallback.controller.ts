@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Query, Redirect } from '@nestjs/common';
+import { Controller, Get, Query, Redirect } from '@nestjs/common';
 import { AvitoCallbackService } from './avitoCallback.service';
 import { Session, type UserSession } from '@thallesp/nestjs-better-auth';
 

@@ -63,7 +63,7 @@ export class WebhookService {
       ИмяСобеседника: interlocutor.name,
     });
 
-    this.avitoApiService.sendMessageToChat({
+    await this.avitoApiService.sendMessageToChat({
       avitoId: payload.userId.toString(),
       chatId: payload.chatId,
       text: replacedText,

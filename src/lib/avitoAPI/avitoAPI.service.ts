@@ -7,7 +7,6 @@ import {
   AvitoChatMessagesDto,
 } from './dto/avitoChatMessages.dto';
 import { AvitoChatDataDto } from './dto/avitoChatData.dto';
-import { AxiosRequestConfig, Method } from 'axios';
 
 type RESTAvitoTokenData = {
   access_token: string;
@@ -37,7 +36,7 @@ export class AvitoAPIService {
     const accessToken =
       await this.avitoSessionService.getAccessTokenByAvitoId(avitoId);
 
-    const res = await firstValueFrom(
+    await firstValueFrom(
       this.httpService.post(
         'https://api.avito.ru/messenger/v3/webhook',
         {
@@ -78,7 +77,7 @@ export class AvitoAPIService {
   }: {
     avitoId: string;
     chatId: string;
-    params: any;
+    params: { limit: number };
   }) {
     const accessToken =
       await this.avitoSessionService.getAccessTokenByAvitoId(avitoId);

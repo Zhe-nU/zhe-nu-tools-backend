@@ -1,6 +1,6 @@
 import z from 'zod';
 
-const avitoChatDataDto = z.object({
+export const avitoChatDataDto = z.object({
   context: z.object({
     type: z.string(),
     value: z.object({

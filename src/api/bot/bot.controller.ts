@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
 import { BotService } from './bot.service';
 import { ZodValidationPipe } from 'src/pipes/zodValidation.pipe';
 import {
@@ -14,7 +14,7 @@ export class BotController {
   getBot(@Param() { userId }: { userId: string }) {
     return this.botService.getBot(userId);
   }
-  
+
   @Delete()
   deleteBot(@Param() { userId }: { userId: string }) {
     return this.botService.deleteBot(userId);
