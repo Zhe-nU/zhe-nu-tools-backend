@@ -1,11 +1,18 @@
 import { betterAuth } from 'better-auth';
-import { admin } from 'better-auth/plugins';
+import { admin, openAPI } from 'better-auth/plugins';
+import { i18n } from '@better-auth/i18n';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
+import { translations } from 'src/utils/translations';
 
 dotenv.config();
 
 export const auth = betterAuth({
+  advanced: {
+    database: {
+      generateId: 'uuid',
+    },
+  },
   database: new Pool({
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT),
@@ -20,6 +27,13 @@ export const auth = betterAuth({
   emailVerification: {
     autoSignInAfterVerification: true,
   },
+  plugins: [
+    admin(),
+    i18n({
+      translations,
+    }),
+    openAPI(),
+  ],
   trustedOrigins: [process.env.CLIENT_URL || '*'],
   advanced: {
     database: {
