@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 import { ApiModule } from './api/api.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AvitoSession } from './models/avitoSession.model';
@@ -8,10 +9,12 @@ import { auth } from './lib/auth';
 import { User } from './models/user.model';
 import { ConfigModule } from '@nestjs/config';
 import { Bot } from './models/bot.model';
+import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    SentryModule.forRoot(),
     ApiModule,
     AuthModule.forRoot({ auth }),
     SequelizeModule.forRoot({
@@ -23,6 +26,12 @@ import { Bot } from './models/bot.model';
       database: process.env.DB_NAME,
       models: [AvitoSession, AvitoUser, Bot, User],
     }),
+  ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: SentryGlobalFilter,
+    },
   ],
 })
 export class AppModule {}

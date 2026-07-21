@@ -15,8 +15,10 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_PORT=${DB_PORT}}
       - DB_USERNAME=${DB_USERNAME}
-      - PORT=${PORT}
+      - SENTRY_DSN=${SENTRY_DSN}
       - NODE_ENV=production
+      - PORT=${PORT}
+
     ports:
       - '3000:3000'
 
