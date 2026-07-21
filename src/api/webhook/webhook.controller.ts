@@ -7,7 +7,7 @@ import {
 import { ZodValidationPipe } from 'src/pipes/zodValidation.pipe';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 
-@Controller('api/webhook')
+@Controller('webhook')
 export class WebhookController {
   constructor(private readonly webhookService: WebhookService) {}
 

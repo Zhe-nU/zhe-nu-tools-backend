@@ -3,8 +3,29 @@ import { BotModule } from './bot/bot.module';
 import { AvitoCallbackModule } from './callback/avitoCallback.module';
 import { WebhookModule } from './webhook/webhook.module';
 import { AvitoSessionModule } from '../lib/avitoSession/avitoSession.module';
+import { RouterModule } from '@nestjs/core';
 
 @Module({
-  imports: [AvitoCallbackModule, AvitoSessionModule, BotModule, WebhookModule],
+  imports: [
+    AvitoCallbackModule,
+    AvitoSessionModule,
+    BotModule,
+    WebhookModule,
+
+    RouterModule.register([
+      {
+        path: 'api',
+        module: AvitoCallbackModule,
+      },
+      {
+        path: 'api',
+        module: BotModule,
+      },
+      {
+        path: 'api',
+        module: WebhookModule,
+      },
+    ]),
+  ],
 })
 export class ApiModule {}

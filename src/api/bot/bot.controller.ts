@@ -6,7 +6,7 @@ import {
   updateBotSettingsSchema,
 } from './dto/updateBotSettings.dto';
 
-@Controller('api/user/:userId/bot')
+@Controller('user/:userId/bot')
 export class BotController {
   constructor(private readonly botService: BotService) {}
 

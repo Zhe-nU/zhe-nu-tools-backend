@@ -2,7 +2,7 @@ import { Controller, Get, Query, Redirect } from '@nestjs/common';
 import { AvitoCallbackService } from './avitoCallback.service';
 import { Session, type UserSession } from '@thallesp/nestjs-better-auth';
 
-@Controller('api/callback/avito')
+@Controller('callback/avito')
 export class AvitoCallbackController {
   constructor(private readonly avitoCallbackService: AvitoCallbackService) {}
 
