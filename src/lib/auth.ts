@@ -35,10 +35,4 @@ export const auth = betterAuth({
     openAPI(),
   ],
   trustedOrigins: [process.env.CLIENT_URL || '*'],
-  advanced: {
-    database: {
-      generateId: 'uuid',
-    },
-  },
-  plugins: [admin()],
 });
