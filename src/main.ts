@@ -11,6 +11,8 @@ async function bootstrap() {
     bodyParser: false,
   });
 
+  app.enableShutdownHooks();
+
   app.enableCors({
     origin: process.env.CLIENT_URL || '*',
     credentials: true,
