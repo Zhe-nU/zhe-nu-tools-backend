@@ -1,4 +1,5 @@
 import {
+  BeforeCreate,
   BelongsTo,
   Column,
   DataType,
@@ -26,4 +27,19 @@ export class Bot extends Model {
     isActive: boolean;
     weekDayText: Array<{ days: string[]; text: string }>;
   };
+
+  @BeforeCreate
+  static settingsDefault(instance: Bot) {
+    const defaults = {
+      answerOnFirstMessage: true,
+      chatTypes: [],
+      isActive: false,
+      weekDayText: [],
+    };
+
+    instance.settings = {
+      ...defaults,
+      ...instance.settings,
+    };
+  }
 }
