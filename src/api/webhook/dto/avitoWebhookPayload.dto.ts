@@ -15,7 +15,7 @@ export const avitoWebhookPayloadSchema = z.object({
         created: z.number(),
         chat_type: z.enum(['u2u', 'u2i']),
         content: z.any(),
-        item_id: z.number(),
+        item_id: z.number().optional(),
       })
       .transform((data) => ({
         id: data.id,
