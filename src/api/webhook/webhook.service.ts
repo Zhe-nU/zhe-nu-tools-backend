@@ -18,7 +18,7 @@ export class WebhookService {
 
   async avito({ payload }: AvitoWebhookPayloadDto) {
     const user = await this.avitoUserService.getUserByAvitoId(
-      payload.userId.toString(),
+      payload.value.userId.toString(),
     );
     if (!user) throw new NotFoundException('USER_NOT_FOUND');
 
@@ -27,31 +27,33 @@ export class WebhookService {
 
     const avitoSession =
       await this.avitoSessionService.getAvitoSessionByAvitoUserId(
-        payload.userId.toString(),
+        payload.value.userId.toString(),
       );
     if (!avitoSession) throw new NotFoundException('AVITO_SESSION_NOT_FOUND');
 
-    if (avitoSession.avitoUser.avitoId === payload.authorId) return;
+    if (avitoSession.avitoUser.avitoId === payload.value.authorId) return;
 
     const messages = await this.avitoApiService.getChatMessages({
-      chatId: payload.chatId,
-      avitoId: payload.userId.toString(),
+      chatId: payload.value.chatId,
+      avitoId: payload.value.userId.toString(),
       params: { limit: 100 },
     });
 
     const hasAuthorMessages = messages.some(
-      (m) => m.authorId === payload.authorId,
+      (m) => m.authorId === payload.value.authorId,
     );
 
     if (botSettings.answerOnFirstMessage && hasAuthorMessages) return;
     if (!botSettings.isActive) return;
-    if (!botSettings.chatTypes.includes(payload.chatType)) return;
+    if (!botSettings.chatTypes.includes(payload.value.chatType)) return;
 
     const chatData = await this.avitoApiService.getChatData(
-      payload.userId.toString(),
-      payload.chatId,
+      payload.value.userId.toString(),
+      payload.value.chatId,
     );
-    const interlocutor = chatData.users.find((u) => u.id !== payload.userId);
+    const interlocutor = chatData.users.find(
+      (u) => u.id !== payload.value.userId,
+    );
     if (!interlocutor) throw new NotFoundException('AVITO_USER_NOT_FOUND');
 
     const template = botSettings.weekDayText.find((wdt) =>
@@ -64,8 +66,8 @@ export class WebhookService {
     });
 
     await this.avitoApiService.sendMessageToChat({
-      avitoId: payload.userId.toString(),
-      chatId: payload.chatId,
+      avitoId: payload.value.userId.toString(),
+      chatId: payload.value.chatId,
       text: replacedText,
     });
   }
