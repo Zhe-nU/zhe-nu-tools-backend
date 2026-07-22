@@ -4,13 +4,13 @@ import {
   Column,
   DataType,
   ForeignKey,
-  Model,
   Table,
 } from 'sequelize-typescript';
 import { User } from './user.model';
+import { BaseModel } from './base.model';
 
 @Table({ tableName: 'bot', timestamps: false })
-export class Bot extends Model {
+export class Bot extends BaseModel {
   @ForeignKey(() => User)
   @Column
   declare userId: string;
