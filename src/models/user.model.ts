@@ -1,5 +1,13 @@
-import { Table, Column, Model, HasOne, DataType } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  HasOne,
+  DataType,
+  HasMany,
+} from 'sequelize-typescript';
 import { AvitoUser } from './avitoUser.model';
+import { Schedule } from './schedule.model';
 
 @Table({
   tableName: 'user',
@@ -24,4 +32,7 @@ export class User extends Model {
 
   @HasOne(() => AvitoUser)
   declare avitoAccount: AvitoUser;
+
+  @HasMany(() => Schedule)
+  declare schedules: Schedule[];
 }
