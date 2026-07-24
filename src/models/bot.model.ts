@@ -25,7 +25,6 @@ export class Bot extends BaseModel {
     answerOnFirstMessage: boolean;
     chatTypes: string[];
     isActive: boolean;
-    weekDayText: Array<{ days: string[]; text: string }>;
   };
 
   @BeforeCreate
@@ -34,7 +33,6 @@ export class Bot extends BaseModel {
       answerOnFirstMessage: true,
       chatTypes: [],
       isActive: false,
-      weekDayText: [],
     };
 
     instance.settings = {
