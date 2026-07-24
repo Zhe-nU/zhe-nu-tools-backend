@@ -5,8 +5,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 Sentry.init({
-  debug: true,
-
   dsn: process.env.SENTRY_DSN,
   integrations: [
     Sentry.consoleLoggingIntegration({ levels: ['error', 'info', 'log'] }),
