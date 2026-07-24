@@ -4,12 +4,14 @@ import { AvitoCallbackModule } from './callback/avitoCallback.module';
 import { WebhookModule } from './webhook/webhook.module';
 import { AvitoSessionModule } from '../lib/avitoSession/avitoSession.module';
 import { RouterModule } from '@nestjs/core';
+import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
   imports: [
     AvitoCallbackModule,
     AvitoSessionModule,
     BotModule,
+    ScheduleModule,
     WebhookModule,
 
     RouterModule.register([
@@ -20,6 +22,10 @@ import { RouterModule } from '@nestjs/core';
       {
         path: 'api',
         module: BotModule,
+      },
+      {
+        path: 'api',
+        module: ScheduleModule,
       },
       {
         path: 'api',
