@@ -4,6 +4,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { Schedule } from 'src/models/schedule.model';
 import { ScheduleItem } from 'src/models/scheduleItem.model';
 import { UpdateScheduleDto } from './dto/updateSchedule.dto';
+import { CreateScheduleDto } from './dto/createSchedule.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -12,6 +13,32 @@ export class ScheduleService {
     @InjectModel(ScheduleItem) private scheduleItemModel: typeof ScheduleItem,
     private readonly sequelize: Sequelize,
   ) {}
+
+  async createSchedule(
+    userId: string,
+    createScheduleDto: CreateScheduleDto,
+  ): Promise<Schedule> {
+    return await this.sequelize.transaction(async (t) => {
+      const schedule = await this.scheduleModel.create<Schedule>(
+        {
+          userId,
+          name: createScheduleDto.name,
+        },
+        { transaction: t },
+      );
+
+      if (createScheduleDto.items?.length)
+        await this.scheduleItemModel.bulkCreate(
+          createScheduleDto.items?.map((i) => ({
+            ...createScheduleDto.items,
+            scheduleId: schedule.id,
+          })),
+          { transaction: t },
+        );
+
+      return schedule.reload({ transaction: t });
+    });
+  }
 
   async deleteSchedule(scheduleId: string) {
     await this.sequelize.transaction(async (t) => {

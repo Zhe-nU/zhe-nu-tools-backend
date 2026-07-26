@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ScheduleService } from './schedule.service';
 import { Schedule } from 'src/models/schedule.model';
 import { ZodValidationPipe } from 'src/pipes/zodValidation.pipe';
@@ -6,10 +14,23 @@ import {
   type UpdateScheduleDto,
   updateScheduleSchema,
 } from './dto/updateSchedule.dto';
+import {
+  type CreateScheduleDto,
+  createScheduleSchema,
+} from './dto/createSchedule.dto';
 
 @Controller('user/:userId/schedule')
 export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
+
+  @Post()
+  async createSchedule(
+    @Param() { userId }: { userId: string },
+    @Body(new ZodValidationPipe(createScheduleSchema))
+    createScheduleDto: CreateScheduleDto,
+  ): Promise<Schedule> {
+    return this.scheduleService.createSchedule(userId, createScheduleDto);
+  }
 
   @Get()
   userScheduleList(
