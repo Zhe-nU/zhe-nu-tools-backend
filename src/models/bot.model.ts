@@ -12,7 +12,7 @@ import { BaseModel } from './base.model';
 import { Schedule } from './schedule.model';
 import { BotSchedule } from './botSchedule.model';
 
-@Table({ tableName: 'bot', timestamps: false })
+@Table({ tableName: 'bot' })
 export class Bot extends BaseModel {
   @ForeignKey(() => User)
   @Column

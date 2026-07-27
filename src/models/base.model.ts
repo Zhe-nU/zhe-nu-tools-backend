@@ -4,9 +4,11 @@ import {
   DataType,
   DeletedAt,
   Model,
+  Table,
   UpdatedAt,
 } from 'sequelize-typescript';
 
+@Table({ paranoid: true })
 export class BaseModel extends Model {
   @Column({
     type: DataType.UUID,

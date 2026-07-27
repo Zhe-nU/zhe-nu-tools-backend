@@ -4,6 +4,31 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.sequelize.transaction(async (t) => {
+      await queryInterface.addColumn(
+        'bot',
+        'createdAt',
+        {
+          type: Sequelize.DATE,
+        },
+        { transaction: t },
+      );
+      await queryInterface.addColumn(
+        'bot',
+        'deletedAt',
+        {
+          type: Sequelize.DATE,
+        },
+        { transaction: t },
+      );
+      await queryInterface.addColumn(
+        'bot',
+        'updatedAt',
+        {
+          type: Sequelize.DATE,
+        },
+        { transaction: t },
+      );
+
       await queryInterface.createTable(
         'schedule',
         {
@@ -169,6 +194,10 @@ module.exports = {
 
   async down(queryInterface) {
     await queryInterface.sequelize.transaction(async (t) => {
+      await queryInterface.removeColumn('bot', 'createdAt', { transaction: t });
+      await queryInterface.removeColumn('bot', 'deletedAt', { transaction: t });
+      await queryInterface.removeColumn('bot', 'updatedAt', { transaction: t });
+
       await queryInterface.dropTable('bot_schedule', { transaction: t });
 
       await queryInterface.dropTable('schedule_item', { transaction: t });
