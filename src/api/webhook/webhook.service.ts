@@ -6,6 +6,7 @@ import { BotService } from '../bot/bot.service';
 import { AvitoUserService } from 'src/lib/avitoUser/avitoUser.service';
 import dayjs from 'dayjs';
 import replacePlaceholders from 'src/utils/replacePlaceholders';
+import { isHourTimeBetween, isNowWeekDay } from 'src/utils/compareDateTime';
 
 @Injectable()
 export class WebhookService {
@@ -22,8 +23,13 @@ export class WebhookService {
     );
     if (!user) throw new NotFoundException('USER_NOT_FOUND');
 
+    const bot = await this.botService.getBot(user.id);
+    if (!bot) throw new NotFoundException('BOT_NOT_FOUND');
+
     const botSettings = await this.botService.getBotSettings(user.id);
     if (!botSettings) throw new NotFoundException('BOT_SETTINGS_NOT_FOUND');
+
+    const botSchedules = await this.botService.getBotSchedules(bot.id);
 
     const avitoSession =
       await this.avitoSessionService.getAvitoSessionByAvitoUserId(
@@ -56,9 +62,14 @@ export class WebhookService {
     );
     if (!interlocutor) throw new NotFoundException('AVITO_USER_NOT_FOUND');
 
-    const template = botSettings.weekDayText.find((wdt) =>
-      wdt.days.includes(dayjs().format('ddd').toLocaleLowerCase()),
-    )?.text;
+    const template = botSchedules
+      .map((s) => s.items)
+      .flat()
+      .find(
+        (i) =>
+          isNowWeekDay(i.weekDay) &&
+          isHourTimeBetween(i.startTime, i.endTime, dayjs().format('HH:mm')),
+      )?.text;
     if (!template) return;
 
     const replacedText = replacePlaceholders(template, {

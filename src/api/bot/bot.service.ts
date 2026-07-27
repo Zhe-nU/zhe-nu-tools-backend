@@ -5,6 +5,7 @@ import { UpdateBotSettingsDto } from './dto/updateBotSettings.dto';
 import { AvitoAPIService } from 'src/lib/avitoAPI/avitoAPI.service';
 import { AvitoUser } from 'src/models/avitoUser.model';
 import { BotSchedule } from 'src/models/botSchedule.model';
+import { Schedule } from 'src/models/schedule.model';
 
 @Injectable()
 export class BotService {
@@ -13,6 +14,7 @@ export class BotService {
     @InjectModel(Bot) private botModel: typeof Bot,
     @InjectModel(BotSchedule)
     private readonly botScheduleModel: typeof BotSchedule,
+    @InjectModel(Schedule) private readonly scheduleModel: typeof Schedule,
     @Inject() private readonly avitoAPIService: AvitoAPIService,
   ) {}
 
@@ -31,6 +33,15 @@ export class BotService {
 
   async getBot(userId: string) {
     return await this.botModel.findOne({ where: { userId } });
+  }
+
+  async getBotSchedules(botId: string) {
+    return await this.scheduleModel.findAll({
+      include: {
+        model: BotSchedule,
+        where: { botId },
+      },
+    });
   }
 
   async getBotSettings(userId: string) {
