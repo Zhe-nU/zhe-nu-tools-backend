@@ -20,7 +20,11 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
-  const config = new DocumentBuilder().build();
+  const config = new DocumentBuilder()
+    .setTitle('Zhe_nU Tools API')
+    .setDescription('API for Zhe_nU Tools')
+    .setVersion('1.0')
+    .build();
   const documentFactory = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
