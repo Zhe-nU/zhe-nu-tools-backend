@@ -30,7 +30,7 @@ export class ScheduleService {
       if (createScheduleDto.items?.length)
         await this.scheduleItemModel.bulkCreate(
           createScheduleDto.items?.map((i) => ({
-            ...createScheduleDto.items,
+            ...i,
             scheduleId: schedule.id,
           })),
           { transaction: t },
