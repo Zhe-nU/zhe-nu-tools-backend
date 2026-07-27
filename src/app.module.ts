@@ -12,6 +12,7 @@ import { Bot } from './models/bot.model';
 import { APP_FILTER } from '@nestjs/core';
 import { Schedule } from './models/schedule.model';
 import { ScheduleItem } from './models/scheduleItem.model';
+import { BotSchedule } from './models/botSchedule.model';
 
 @Module({
   imports: [
@@ -26,7 +27,15 @@ import { ScheduleItem } from './models/scheduleItem.model';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      models: [AvitoSession, AvitoUser, Bot, Schedule, ScheduleItem, User],
+      models: [
+        AvitoSession,
+        AvitoUser,
+        Bot,
+        BotSchedule,
+        Schedule,
+        ScheduleItem,
+        User,
+      ],
     }),
   ],
   providers: [

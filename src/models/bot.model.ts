@@ -1,6 +1,7 @@
 import {
   BeforeCreate,
   BelongsTo,
+  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
@@ -8,6 +9,8 @@ import {
 } from 'sequelize-typescript';
 import { User } from './user.model';
 import { BaseModel } from './base.model';
+import { Schedule } from './schedule.model';
+import { BotSchedule } from './botSchedule.model';
 
 @Table({ tableName: 'bot', timestamps: false })
 export class Bot extends BaseModel {
@@ -26,6 +29,9 @@ export class Bot extends BaseModel {
     chatTypes: string[];
     isActive: boolean;
   };
+
+  @BelongsToMany(() => Schedule, () => BotSchedule)
+  declare schedules: Schedule[];
 
   @BeforeCreate
   static settingsDefault(instance: Bot) {
