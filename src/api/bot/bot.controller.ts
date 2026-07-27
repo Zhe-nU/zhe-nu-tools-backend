@@ -44,6 +44,11 @@ export class BotController {
     return this.botService.unbindSchedule(botId, scheduleId);
   }
 
+  @Get(':botId/schedule')
+  getBotSchedules(@Param() { botId }: { botId: string }) {
+    return this.botService.getBotSchedules(botId);
+  }
+
   @Get('settings')
   getBotSettings(@Param() { userId }: { userId: string }) {
     return this.botService.getBotSettings(userId);
