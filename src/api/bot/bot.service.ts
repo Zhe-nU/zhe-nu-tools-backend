@@ -4,14 +4,21 @@ import { Bot } from 'src/models/bot.model';
 import { UpdateBotSettingsDto } from './dto/updateBotSettings.dto';
 import { AvitoAPIService } from 'src/lib/avitoAPI/avitoAPI.service';
 import { AvitoUser } from 'src/models/avitoUser.model';
+import { BotSchedule } from 'src/models/botSchedule.model';
 
 @Injectable()
 export class BotService {
   constructor(
     @InjectModel(AvitoUser) private avitoUserModel: typeof AvitoUser,
     @InjectModel(Bot) private botModel: typeof Bot,
+    @InjectModel(BotSchedule)
+    private readonly botScheduleModel: typeof BotSchedule,
     @Inject() private readonly avitoAPIService: AvitoAPIService,
   ) {}
+
+  async bindSchedule(botId: string, scheduleId: string) {
+    await this.botScheduleModel.create({ botId, scheduleId });
+  }
 
   async deleteBot(userId: string) {
     const avitoUser = await this.avitoUserModel.findOne({ where: { userId } });
@@ -31,6 +38,10 @@ export class BotService {
     if (!bot) throw new NotFoundException('BOT_SETTINGS_NOT_FOUND');
 
     return bot?.settings;
+  }
+
+  async unbindSchedule(botId: string, scheduleId: string) {
+    await this.botScheduleModel.destroy({ where: { botId, scheduleId } });
   }
 
   async updateBotSettings(userId: string, settings: UpdateBotSettingsDto) {

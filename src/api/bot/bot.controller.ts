@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { BotService } from './bot.service';
 import { ZodValidationPipe } from 'src/pipes/zodValidation.pipe';
 import {
@@ -18,6 +26,22 @@ export class BotController {
   @Delete()
   deleteBot(@Param() { userId }: { userId: string }) {
     return this.botService.deleteBot(userId);
+  }
+
+  @Post(':botId/bind-schedule')
+  bindSchedule(
+    @Param() { botId }: { botId: string },
+    @Body() { scheduleId }: { scheduleId: string },
+  ) {
+    return this.botService.bindSchedule(botId, scheduleId);
+  }
+
+  @Post(':botId/unbind-schedule')
+  unbindSchedule(
+    @Param() { botId }: { botId: string },
+    @Body() { scheduleId }: { scheduleId: string },
+  ) {
+    return this.botService.unbindSchedule(botId, scheduleId);
   }
 
   @Get('settings')
