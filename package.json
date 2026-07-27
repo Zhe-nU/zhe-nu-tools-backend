@@ -41,6 +41,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "dayjs": "^1.11.21",
+    "nestjs-zod": "^5.5.0",
     "pg": "^8.22.0",
     "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.2.2",

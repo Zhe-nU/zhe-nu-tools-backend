@@ -26,7 +26,7 @@ export class Bot extends BaseModel {
   })
   declare settings: {
     answerOnFirstMessage: boolean;
-    chatTypes: string[];
+    chatTypes: Array<'u2i' | 'u2u'>;
     isActive: boolean;
   };
 

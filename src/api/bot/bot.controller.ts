@@ -8,11 +8,11 @@ import {
   Post,
 } from '@nestjs/common';
 import { BotService } from './bot.service';
-import { ZodValidationPipe } from 'src/pipes/zodValidation.pipe';
 import {
-  type UpdateBotSettingsDto,
-  updateBotSettingsSchema,
+  BotSettingsDto,
+  UpdateBotSettingsDto,
 } from './dto/updateBotSettings.dto';
+import { ZodResponse } from 'nestjs-zod';
 
 @Controller('user/:userId/bot')
 export class BotController {
@@ -50,16 +50,27 @@ export class BotController {
   }
 
   @Get('settings')
+  @ZodResponse({
+    status: 200,
+    type: BotSettingsDto,
+    description: 'Объект с настройками бота',
+  })
   getBotSettings(@Param() { userId }: { userId: string }) {
     return this.botService.getBotSettings(userId);
   }
 
   @Patch('settings')
+  @ZodResponse({
+    status: 200,
+    type: BotSettingsDto,
+    description: 'Объект с обновленными настройками бота',
+  })
   updateBotSettings(
     @Param() { userId }: { userId: string },
-    @Body(new ZodValidationPipe(updateBotSettingsSchema))
-    body: UpdateBotSettingsDto,
+    // @Body(new ZodValidationPipe(updateBotSettingsSchema))
+    @Body()
+    updateBotSettingsDto: UpdateBotSettingsDto,
   ) {
-    return this.botService.updateBotSettings(userId, body);
+    return this.botService.updateBotSettings(userId, updateBotSettingsDto);
   }
 }
