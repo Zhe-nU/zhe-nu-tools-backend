@@ -1,11 +1,12 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Bot } from 'src/models/bot.model';
-import { UpdateBotSettingsDto } from './dto/updateBotSettings.dto';
+import { UpdateBotSettingsDto } from './dto/botSettings.dto';
 import { AvitoAPIService } from 'src/lib/avitoAPI/avitoAPI.service';
 import { AvitoUser } from 'src/models/avitoUser.model';
 import { BotSchedule } from 'src/models/botSchedule.model';
 import { Schedule } from 'src/models/schedule.model';
+import { ScheduleItem } from 'src/models/scheduleItem.model';
 
 @Injectable()
 export class BotService {
@@ -32,33 +33,43 @@ export class BotService {
   }
 
   async getBot(userId: string) {
-    return await this.botModel.findOne({ where: { userId } });
+    const bot = await this.botModel.findOne({
+      where: { userId },
+    });
+    if (!bot) throw new NotFoundException('BOT_NOT_FOUND');
+
+    return bot;
   }
 
   async getBotSchedules(botId: string) {
     return await this.scheduleModel.findAll({
-      include: {
-        model: BotSchedule,
-        where: { botId },
-      },
+      include: [
+        {
+          model: Bot,
+          where: { id: botId },
+        },
+        ScheduleItem,
+      ],
     });
   }
 
-  async getBotSettings(userId: string) {
-    const bot = await this.botModel.findOne({ where: { userId } });
+  async getBotSettings(botId: string) {
+    const bot = await this.botModel.findOne({
+      where: { id: botId },
+    });
     if (!bot) throw new NotFoundException('BOT_SETTINGS_NOT_FOUND');
 
-    return bot?.settings;
+    return bot.settings;
   }
 
   async unbindSchedule(botId: string, scheduleId: string) {
     await this.botScheduleModel.destroy({ where: { botId, scheduleId } });
   }
 
-  async updateBotSettings(userId: string, settings: UpdateBotSettingsDto) {
+  async updateBotSettings(botId: string, settings: UpdateBotSettingsDto) {
     const [, [bot]] = await this.botModel.update(
       { settings },
-      { where: { userId }, returning: true },
+      { where: { id: botId }, returning: true },
     );
 
     return bot.settings;
