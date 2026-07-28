@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AvitoWebhookPayloadDto } from './dto/avitoWebhookPayload.dto';
+import dayjs from '../../lib/dayjs';
 import { AvitoSessionService } from '../../lib/avitoSession/avitoSession.service';
 import { AvitoAPIService } from 'src/lib/avitoAPI/avitoAPI.service';
 import { BotService } from '../bot/bot.service';
 import { AvitoUserService } from 'src/lib/avitoUser/avitoUser.service';
-import dayjs from 'dayjs';
 import replacePlaceholders from 'src/utils/replacePlaceholders';
 import { isHourTimeBetween, isNowWeekDay } from 'src/utils/compareDateTime';
+import { AvitoWebhookDto } from './dto/avitoWebhook.dto';
 
 @Injectable()
 export class WebhookService {
@@ -17,7 +17,7 @@ export class WebhookService {
     private readonly botService: BotService,
   ) {}
 
-  async avito({ payload }: AvitoWebhookPayloadDto) {
+  async avito({ payload }: AvitoWebhookDto) {
     const user = await this.avitoUserService.getUserByAvitoId(
       payload.value.userId.toString(),
     );
@@ -26,7 +26,7 @@ export class WebhookService {
     const bot = await this.botService.getBot(user.id);
     if (!bot) throw new NotFoundException('BOT_NOT_FOUND');
 
-    const botSettings = await this.botService.getBotSettings(user.id);
+    const botSettings = await this.botService.getBotSettings(bot.id);
     if (!botSettings) throw new NotFoundException('BOT_SETTINGS_NOT_FOUND');
 
     const botSchedules = await this.botService.getBotSchedules(bot.id);

@@ -1,11 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { WebhookService } from './webhook.service';
-import {
-  avitoWebhookPayloadSchema,
-  type AvitoWebhookPayloadDto,
-} from './dto/avitoWebhookPayload.dto';
-import { ZodValidationPipe } from 'src/pipes/zodValidation.pipe';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
+import { AvitoWebhookDto } from './dto/avitoWebhook.dto';
 
 @Controller('webhook')
 export class WebhookController {
@@ -14,9 +10,9 @@ export class WebhookController {
   @Post('avito')
   @AllowAnonymous()
   avito(
-    @Body(new ZodValidationPipe(avitoWebhookPayloadSchema))
-    body: AvitoWebhookPayloadDto,
+    @Body()
+    avitoWebhookDto: AvitoWebhookDto,
   ) {
-    return this.webhookService.avito(body);
+    return this.webhookService.avito(avitoWebhookDto);
   }
 }
