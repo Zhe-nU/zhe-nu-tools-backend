@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs from '../lib/dayjs';
 import { WeekDay } from 'src/models/scheduleItem.model';
 
 export const isHourTimeBetween = (
@@ -7,8 +7,8 @@ export const isHourTimeBetween = (
   comparisonTime: string,
 ) => {
   return (
-    dayjs(startTime, 'HH:mm').isBefore(comparisonTime) &&
-    dayjs(endTime, 'HH:mm').isAfter(comparisonTime)
+    dayjs(startTime, 'HH:mm').isBefore(dayjs(comparisonTime, 'HH:mm')) &&
+    dayjs(endTime, 'HH:mm').isAfter(dayjs(comparisonTime, 'HH:mm'))
   );
 };
 
