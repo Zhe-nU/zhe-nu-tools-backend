@@ -8,6 +8,7 @@ import {
 import { AvitoSession } from './avitoSession.model';
 import { User } from './user.model';
 import { BaseModel } from './base.model';
+import { Bot } from './bot.model';
 
 @Table({ tableName: 'avito_user', paranoid: true, timestamps: true })
 export class AvitoUser extends BaseModel {
@@ -32,6 +33,9 @@ export class AvitoUser extends BaseModel {
 
   @Column
   declare profileUrl: string;
+
+  @HasOne(() => Bot)
+  declare bot: Bot;
 
   @HasOne(() => AvitoSession)
   declare avitoSession: AvitoSession;

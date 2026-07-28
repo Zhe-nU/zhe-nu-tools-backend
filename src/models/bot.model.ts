@@ -11,6 +11,7 @@ import { User } from './user.model';
 import { BaseModel } from './base.model';
 import { Schedule } from './schedule.model';
 import { BotSchedule } from './botSchedule.model';
+import { AvitoUser } from './avitoUser.model';
 
 @Table({ tableName: 'bot' })
 export class Bot extends BaseModel {
@@ -20,6 +21,13 @@ export class Bot extends BaseModel {
 
   @BelongsTo(() => User)
   declare user: User;
+
+  @ForeignKey(() => AvitoUser)
+  @Column
+  declare avitoUserId: string;
+
+  @BelongsTo(() => AvitoUser)
+  declare avitoUser: AvitoUser;
 
   @Column({
     type: DataType.JSONB,
