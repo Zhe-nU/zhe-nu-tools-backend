@@ -9,30 +9,31 @@ import {
 } from '@nestjs/common';
 import { ScheduleService } from './schedule.service';
 import { Schedule } from 'src/models/schedule.model';
-import { ZodValidationPipe } from 'src/pipes/zodValidation.pipe';
 import {
-  type UpdateScheduleDto,
-  updateScheduleSchema,
-} from './dto/updateSchedule.dto';
-import {
-  type CreateScheduleDto,
-  createScheduleSchema,
-} from './dto/createSchedule.dto';
+  CreateScheduleDto,
+  ScheduleDto,
+  SchedulesWithItemsDto,
+  ScheduleWithItemsDto,
+  UpdateScheduleDto,
+} from './dto/schedule.dto';
+import { ZodResponse } from 'nestjs-zod';
 
 @Controller('user/:userId/schedule')
 export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
   @Post()
+  @ZodResponse({ status: 201, type: ScheduleDto })
   async createSchedule(
     @Param() { userId }: { userId: string },
-    @Body(new ZodValidationPipe(createScheduleSchema))
+    @Body()
     createScheduleDto: CreateScheduleDto,
   ): Promise<Schedule> {
     return this.scheduleService.createSchedule(userId, createScheduleDto);
   }
 
   @Get()
+  @ZodResponse({ status: 200, type: SchedulesWithItemsDto })
   userScheduleList(
     @Param() { userId }: { userId: string },
   ): Promise<Schedule[]> {
@@ -40,6 +41,7 @@ export class ScheduleController {
   }
 
   @Get(':scheduleId')
+  @ZodResponse({ status: 200, type: ScheduleWithItemsDto })
   getSchedule(
     @Param() { scheduleId }: { scheduleId: string },
   ): Promise<Schedule> {
@@ -47,9 +49,10 @@ export class ScheduleController {
   }
 
   @Patch(':scheduleId')
+  @ZodResponse({ status: 200, type: ScheduleWithItemsDto })
   updateSchedule(
     @Param() { scheduleId }: { scheduleId: string },
-    @Body(new ZodValidationPipe(updateScheduleSchema))
+    @Body()
     updateScheduleDto: UpdateScheduleDto,
   ): Promise<Schedule> {
     return this.scheduleService.updateSchedule(scheduleId, updateScheduleDto);

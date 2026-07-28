@@ -3,8 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { Schedule } from 'src/models/schedule.model';
 import { ScheduleItem } from 'src/models/scheduleItem.model';
-import { UpdateScheduleDto } from './dto/updateSchedule.dto';
-import { CreateScheduleDto } from './dto/createSchedule.dto';
+import { CreateScheduleDto, UpdateScheduleDto } from './dto/schedule.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -36,7 +35,7 @@ export class ScheduleService {
           { transaction: t },
         );
 
-      return schedule.reload({ transaction: t });
+      return schedule.reload({ include: [ScheduleItem], transaction: t });
     });
   }
 
@@ -55,7 +54,9 @@ export class ScheduleService {
   }
 
   async getSchedule(scheduleId: string): Promise<Schedule> {
-    const schedule = await this.scheduleModel.findByPk(scheduleId);
+    const schedule = await this.scheduleModel.findByPk(scheduleId, {
+      include: [ScheduleItem],
+    });
     if (!schedule) throw new NotFoundException();
 
     return schedule;
@@ -66,6 +67,9 @@ export class ScheduleService {
     updateScheduleDto: UpdateScheduleDto,
   ): Promise<Schedule> {
     const updatedSchedule = await this.sequelize.transaction(async (t) => {
+      const schedule = await this.scheduleModel.findByPk(scheduleId);
+      if (!schedule) throw new NotFoundException('SCHEDULE_NOT_FOUND');
+
       if (updateScheduleDto.items) {
         await this.scheduleItemModel.destroy({
           where: { scheduleId },
@@ -87,24 +91,25 @@ export class ScheduleService {
             transaction: t,
           },
         );
-      } else
-        updatedSchedule['items'] = await this.scheduleItemModel.findAll({
-          where: { scheduleId },
-        });
+      }
 
-      return (
-        await this.scheduleModel.update(updateScheduleDto, {
-          where: { id: scheduleId },
-          returning: true,
-          transaction: t,
-        })
-      )[1][0];
+      await schedule.update(updateScheduleDto, {
+        where: { id: scheduleId },
+        transaction: t,
+      });
+
+      return schedule.reload({
+        include: [ScheduleItem],
+      });
     });
 
     return updatedSchedule;
   }
 
   async userScheduleList(userId: string): Promise<Schedule[]> {
-    return await this.scheduleModel.findAll({ where: { userId } });
+    return await this.scheduleModel.findAll({
+      where: { userId },
+      include: [ScheduleItem],
+    });
   }
 }
