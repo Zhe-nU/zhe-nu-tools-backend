@@ -23,13 +23,16 @@ export class WebhookService {
     );
     if (!user) throw new NotFoundException('USER_NOT_FOUND');
 
-    const bot = await this.botService.getBot(user.id);
-    if (!bot) throw new NotFoundException('BOT_NOT_FOUND');
+    const bots = await this.botService.getUserBots(user.id);
+    const currentBot = bots.find(
+      (b) => b.avitoUserId === payload.value.userId.toString(),
+    );
+    if (!currentBot) throw new NotFoundException('BOT_NOT_FOUND');
 
-    const botSettings = await this.botService.getBotSettings(bot.id);
+    const botSettings = await this.botService.getBotSettings(currentBot.id);
     if (!botSettings) throw new NotFoundException('BOT_SETTINGS_NOT_FOUND');
 
-    const botSchedules = await this.botService.getBotSchedules(bot.id);
+    const botSchedules = await this.botService.getBotSchedules(currentBot.id);
 
     const avitoSession =
       await this.avitoSessionService.getAvitoSessionByAvitoUserId(

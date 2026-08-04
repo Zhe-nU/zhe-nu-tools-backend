@@ -16,7 +16,10 @@ export class AvitoCallbackService {
     private readonly avitoAPIService: AvitoAPIService,
   ) {}
 
-  async oauthAvito(userId: string, code: string) {
+  async oauthAvito(
+    userId: string,
+    code: string,
+  ): Promise<{ success: boolean; reason?: string }> {
     const user = await this.userModel.findByPk(userId);
     if (!user) throw new NotFoundException('USER_NOT_FOUND');
 
@@ -38,6 +41,15 @@ export class AvitoCallbackService {
         avitoUserId: avitoUser.id,
       });
     } else {
+      const bot = await this.botModel.findOne({
+        where: { avitoUserId: avitoUser.id },
+      });
+      if (bot)
+        return {
+          success: false,
+          reason: 'BOT_ALREADY_LINKED',
+        };
+
       await this.avitoSessionModel.update(tokenData, {
         where: { avitoUserId: avitoUser.id },
       });
@@ -46,5 +58,7 @@ export class AvitoCallbackService {
     await this.botModel.create({ userId, avitoUserId: avitoUser.id });
 
     await this.avitoAPIService.addWebhook(avitoUserData.avitoId.toString());
+
+    return { success: true };
   }
 }
