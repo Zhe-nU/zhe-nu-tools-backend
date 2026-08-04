@@ -23,18 +23,18 @@ export class BotService {
     await this.botScheduleModel.create({ botId, scheduleId });
   }
 
-  async deleteBot(userId: string) {
-    const avitoUser = await this.avitoUserModel.findOne({ where: { userId } });
+  async deleteBot(userId: string, botId: string) {
+    const avitoUser = await this.avitoUserModel.findOne({ where: { botId } });
     if (!avitoUser) throw new NotFoundException('AVITO_USER_NOT_FOUND');
 
-    await this.botModel.destroy({ where: { userId } });
+    await this.botModel.destroy({ where: { id: botId, userId } });
 
     await this.avitoAPIService.unsubscribeWebhook(avitoUser.avitoId.toString());
   }
 
-  async getBot(userId: string) {
+  async getBot(userId: string, botId: string) {
     const bot = await this.botModel.findOne({
-      where: { userId },
+      where: { id: botId, userId },
     });
     if (!bot) throw new NotFoundException('BOT_NOT_FOUND');
 
@@ -60,6 +60,10 @@ export class BotService {
     if (!bot) throw new NotFoundException('BOT_SETTINGS_NOT_FOUND');
 
     return bot.settings;
+  }
+
+  async getUserBots(userId: string) {
+    return await this.botModel.findAll({ where: { userId } });
   }
 
   async unbindSchedule(botId: string, scheduleId: string) {
