@@ -2,7 +2,7 @@ import './instrument';
 
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { apiReference } from '@scalar/express-api-reference';
+import { apiReference } from '@scalar/nestjs-api-reference';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { cleanupOpenApiDoc } from 'nestjs-zod';
