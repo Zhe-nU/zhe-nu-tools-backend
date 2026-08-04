@@ -64,6 +64,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_PORT: ${{ secrets.DB_PORT }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
 
           AVITO_WEBHOOK_BASE_URL: ${{ vars.AVITO_WEBHOOK_BASE_URL }}
           BETTER_AUTH_URL: ${{ vars.BETTER_AUTH_URL }}
@@ -91,6 +92,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_PORT: ${{ secrets.DB_PORT }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
 
           AVITO_WEBHOOK_BASE_URL: ${{ vars.AVITO_WEBHOOK_BASE_URL }}
           BETTER_AUTH_URL: ${{ vars.BETTER_AUTH_URL }}
