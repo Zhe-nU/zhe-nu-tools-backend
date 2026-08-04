@@ -16,6 +16,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_PORT=${DB_PORT}}
       - DB_USERNAME=${DB_USERNAME}
+      - RESEND_API_KEY=${RESEND_API_KEY}
       - SENTRY_DSN=${SENTRY_DSN}
       - NODE_ENV=production
       - PORT=${PORT}

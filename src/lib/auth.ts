@@ -4,8 +4,12 @@ import { i18n } from '@better-auth/i18n';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import { translations } from 'src/utils/translations';
+import { PasswordResetEmail } from '../templates/password-reset';
+import { Resend } from 'resend';
 
 dotenv.config();
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const auth = betterAuth({
   advanced: {
@@ -23,6 +27,15 @@ export const auth = betterAuth({
   emailAndPassword: {
     autoSignIn: true,
     enabled: true,
+    revokeSessionsOnPasswordReset: true,
+    sendResetPassword: async ({ user, url }) => {
+      void resend.emails.send({
+        from: 'security@notifications.zhe-nu-tools.ru',
+        to: user.email,
+        subject: 'Восстановление пароля',
+        react: PasswordResetEmail({ url }),
+      });
+    },
   },
   emailVerification: {
     autoSignInAfterVerification: true,
