@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { translations } from 'src/utils/translations';
 import { PasswordResetEmail } from '../templates/password-reset';
 import { Resend } from 'resend';
+import { NotifyPasswordChange } from 'src/templates/notify-password-change';
 
 dotenv.config();
 
@@ -28,13 +29,24 @@ export const auth = betterAuth({
     autoSignIn: true,
     enabled: true,
     revokeSessionsOnPasswordReset: true,
+    onPasswordReset: async ({ user }) => {
+      void (await resend.emails.send({
+        from: 'Zhe_nU <noreply@notifications.zhe-nu-tools.ru>',
+        to: user.email,
+        subject: 'Изменение пароля',
+        react: NotifyPasswordChange({
+          changeDate: new Date(),
+          fullName: user.name,
+        }),
+      }));
+    },
     sendResetPassword: async ({ user, url }) => {
-      void resend.emails.send({
-        from: 'security@notifications.zhe-nu-tools.ru',
+      void (await resend.emails.send({
+        from: 'Zhe_nU <noreply@notifications.zhe-nu-tools.ru>',
         to: user.email,
         subject: 'Восстановление пароля',
         react: PasswordResetEmail({ url }),
-      });
+      }));
     },
   },
   emailVerification: {
