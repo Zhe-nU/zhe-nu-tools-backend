@@ -3,7 +3,7 @@ import { AvitoCallbackService } from './avitoCallback.service';
 import { Session, type UserSession } from '@thallesp/nestjs-better-auth';
 import { ApiTemporaryRedirectResponse } from '@nestjs/swagger';
 
-@Controller('callback/avito')
+@Controller()
 export class AvitoCallbackController {
   constructor(private readonly avitoCallbackService: AvitoCallbackService) {}
 
@@ -12,9 +12,10 @@ export class AvitoCallbackController {
   @ApiTemporaryRedirectResponse({
     description:
       'Редирект на панель управления. В случае, если существует пользователь с привязанным avito аккаунтом, то редирект будет с дополнительным query параметром error=BOT_ALREADY_LINKED',
-    links: {
-      Dashboard: {
+    headers: {
+      Location: {
         description: 'Панель управления',
+        schema: { example: '/dashboard/manage-bot', type: 'string' },
       },
     },
   })

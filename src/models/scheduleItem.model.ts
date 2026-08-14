@@ -45,5 +45,17 @@ export class ScheduleItem extends BaseModel {
   @Column({ type: DataType.STRING })
   declare endTime: TimeString;
 
+  @Column({
+    type: DataType.JSONB,
+    defaultValue: {
+      startTime: { hours: 0, minutes: 0 },
+      endTime: { hours: 23, minutes: 59 },
+    },
+  })
+  declare time: {
+    startTime: { hours: number; minutes: number };
+    endTime: { hours: number; minutes: number };
+  };
+
   @Column declare text: string;
 }

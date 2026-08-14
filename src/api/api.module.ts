@@ -5,6 +5,7 @@ import { WebhookModule } from './webhook/webhook.module';
 import { AvitoSessionModule } from '../lib/avitoSession/avitoSession.module';
 import { RouterModule } from '@nestjs/core';
 import { ScheduleModule } from './schedule/schedule.module';
+import { ScheduleItemModule } from './schedule/schedule-item/schedule-item.module';
 
 @Module({
   imports: [
@@ -17,19 +18,36 @@ import { ScheduleModule } from './schedule/schedule.module';
     RouterModule.register([
       {
         path: 'api',
-        module: AvitoCallbackModule,
-      },
-      {
-        path: 'api',
-        module: BotModule,
-      },
-      {
-        path: 'api',
-        module: ScheduleModule,
-      },
-      {
-        path: 'api',
-        module: WebhookModule,
+        children: [
+          {
+            path: 'callback/avito',
+            module: AvitoCallbackModule,
+          },
+          {
+            path: 'users',
+            children: [
+              {
+                path: ':userId/bots',
+                module: BotModule,
+              },
+              {
+                path: ':userId/schedules',
+                module: ScheduleModule,
+                children: [
+                  {
+                    path: ':scheduleId/items',
+                    module: ScheduleItemModule,
+                  },
+                ],
+              },
+            ],
+          },
+
+          {
+            path: 'webhook',
+            module: WebhookModule,
+          },
+        ],
       },
     ]),
   ],

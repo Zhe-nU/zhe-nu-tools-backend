@@ -55,7 +55,7 @@ export class ScheduleService {
 
   async getSchedule(scheduleId: string): Promise<Schedule> {
     const schedule = await this.scheduleModel.findByPk(scheduleId, {
-      include: [ScheduleItem],
+      include: ScheduleItem,
     });
     if (!schedule) throw new NotFoundException();
 
@@ -109,7 +109,7 @@ export class ScheduleService {
   async userScheduleList(userId: string): Promise<Schedule[]> {
     return await this.scheduleModel.findAll({
       where: { userId },
-      include: [ScheduleItem],
+      include: ScheduleItem,
     });
   }
 }

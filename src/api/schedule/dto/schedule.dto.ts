@@ -1,47 +1,39 @@
 import { createZodDto } from 'nestjs-zod';
-import { weekDays } from 'src/models/scheduleItem.model';
 import z from 'zod';
+import {
+  CreateScheduleItemDto,
+  ScheduleItemDto,
+} from '../schedule-item/dto/schedule-item.dto';
 
 export class ScheduleDto extends createZodDto(
   z.object({
     id: z.uuid(),
-    name: z.string(),
+    name: z.string().min(1),
   }),
+  { codec: true },
 ) {}
 
 export class ScheduleWithItemsDto extends createZodDto(
   ScheduleDto.schema.extend({
-    items: z.array(
-      z.object({
-        weekDay: z.enum(weekDays),
-        startTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/),
-        endTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/),
-        text: z.string().min(1),
-      }),
-    ),
+    items: z.array(ScheduleItemDto.schema),
   }),
+  { codec: true },
 ) {}
 
 export class SchedulesWithItemsDto extends createZodDto(
   z.array(ScheduleWithItemsDto.schema),
+  { codec: true },
 ) {}
 
 export class CreateScheduleDto extends createZodDto(
   z.object({
     name: z.string().min(1),
-    items: z
-      .array(
-        z.object({
-          weekDay: z.enum(weekDays),
-          startTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/),
-          endTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/),
-          text: z.string().min(1),
-        }),
-      )
-      .optional(),
+    items: z.array(CreateScheduleItemDto.schema).optional(),
   }),
+  { codec: true },
 ) {}
 
 export class UpdateScheduleDto extends createZodDto(
   CreateScheduleDto.schema.partial(),
+  { codec: true },
 ) {}

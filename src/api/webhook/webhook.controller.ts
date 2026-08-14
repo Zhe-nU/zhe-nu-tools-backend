@@ -3,7 +3,7 @@ import { WebhookService } from './webhook.service';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { AvitoWebhookDto } from './dto/avitoWebhook.dto';
 
-@Controller('webhook')
+@Controller()
 export class WebhookController {
   constructor(private readonly webhookService: WebhookService) {}
 

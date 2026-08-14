@@ -18,9 +18,19 @@ import { OwnershipGuard } from 'src/guards/ownership.guard';
 
 @ApiParam({ name: 'userId', type: 'string', format: 'uuid' })
 @UseGuards(OwnershipGuard)
-@Controller('user/:userId/bot')
+@Controller()
 export class BotController {
   constructor(private readonly botService: BotService) {}
+
+  @Get()
+  @ZodResponse({
+    status: 200,
+    type: [BotDto],
+    description: 'Список ботов пользователя',
+  })
+  getUserBots(@Param('userId') userId: string) {
+    return this.botService.getUserBots(userId);
+  }
 
   @ApiParam({ name: 'botId', type: 'string', format: 'uuid' })
   @Get(':botId')

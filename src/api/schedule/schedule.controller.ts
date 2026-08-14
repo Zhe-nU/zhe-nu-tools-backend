@@ -3,9 +3,12 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ScheduleService } from './schedule.service';
 import { Schedule } from 'src/models/schedule.model';
@@ -18,14 +21,16 @@ import {
 } from './dto/schedule.dto';
 import { ZodResponse } from 'nestjs-zod';
 import { ApiParam } from '@nestjs/swagger';
+import { OwnershipGuard } from 'src/guards/ownership.guard';
 
 @ApiParam({ name: 'userId', type: 'string', format: 'uuid' })
-@Controller('user/:userId/schedule')
+@UseGuards(OwnershipGuard)
+@Controller()
 export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
   @Post()
-  @ZodResponse({ status: 201, type: ScheduleDto })
+  @ZodResponse({ status: HttpStatus.OK, type: ScheduleDto })
   async createSchedule(
     @Param('userId') userId: string,
     @Body()
@@ -35,19 +40,19 @@ export class ScheduleController {
   }
 
   @Get()
-  @ZodResponse({ status: 200, type: SchedulesWithItemsDto })
+  @ZodResponse({ status: HttpStatus.OK, type: SchedulesWithItemsDto })
   userScheduleList(@Param('userId') userId: string): Promise<Schedule[]> {
     return this.scheduleService.userScheduleList(userId);
   }
 
   @Get(':scheduleId')
-  @ZodResponse({ status: 200, type: ScheduleWithItemsDto })
+  @ZodResponse({ status: HttpStatus.OK, type: ScheduleWithItemsDto })
   getSchedule(@Param('scheduleId') scheduleId: string): Promise<Schedule> {
     return this.scheduleService.getSchedule(scheduleId);
   }
 
   @Patch(':scheduleId')
-  @ZodResponse({ status: 200, type: ScheduleWithItemsDto })
+  @ZodResponse({ status: HttpStatus.OK, type: ScheduleWithItemsDto })
   updateSchedule(
     @Param('scheduleId') scheduleId: string,
     @Body()
@@ -57,6 +62,7 @@ export class ScheduleController {
   }
 
   @Delete(':scheduleId')
+  @HttpCode(HttpStatus.NO_CONTENT)
   deleteSchedule(@Param('scheduleId') scheduleId: string) {
     return this.scheduleService.deleteSchedule(scheduleId);
   }
