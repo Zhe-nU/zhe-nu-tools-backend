@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
+import * as changeKeys from 'change-case/keys';
 import { AvitoSessionService } from '../avitoSession/avitoSession.service';
 import {
   avitoChatMessagesDto,
@@ -22,6 +23,48 @@ type RESTAvitoUserData = {
   email: string;
   phone: string;
   profile_url: string;
+};
+
+type RESTAvitoUserItemsData = {
+  meta: {
+    page: number;
+    per_page: number;
+  };
+  resources: [
+    {
+      address: string;
+      category: {
+        id: number;
+        name: string;
+      };
+      id: number;
+      price: number;
+      status: string;
+      title: string;
+      url: string;
+    },
+  ];
+};
+
+type AvitoUserItemsData = {
+  meta: {
+    page: number;
+    per_page: number;
+  };
+  resources: [
+    {
+      address: string;
+      category: {
+        id: number;
+        name: string;
+      };
+      id: number;
+      price: number;
+      status: string;
+      title: string;
+      url: string;
+    },
+  ];
 };
 
 @Injectable()
@@ -170,6 +213,42 @@ export class AvitoAPIService {
       phone: data.phone,
       profileUrl: data.profile_url,
     };
+  }
+
+  /**
+   *
+   * @param avitoId
+   * @param params - Объект с query параметрами для API Avito
+   * @param params.updatedAtFrom - Фильтр больше либо равно по дате обновления/редактирования объявления в формате YYYY-MM-DD
+   * @returns
+   */
+
+  async getUserItems(
+    avitoId: string,
+    params?: {
+      perPage?: number;
+      page?: number;
+      status?: 'active' | 'removed' | 'old' | 'blocked' | 'rejected';
+      updatedAtFrom?: string;
+      category?: number;
+    },
+  ): Promise<AvitoUserItemsData> {
+    const accessToken =
+      await this.avitoSessionService.getAccessTokenByAvitoId(avitoId);
+
+    const { data } = await firstValueFrom(
+      this.httpService.get<RESTAvitoUserItemsData>(
+        'https://api.avito.ru/core/v1/items',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: params && changeKeys.snakeCase(params),
+        },
+      ),
+    );
+
+    return changeKeys.camelCase(data) as AvitoUserItemsData;
   }
 
   async refreshToken(refreshToken: string) {
