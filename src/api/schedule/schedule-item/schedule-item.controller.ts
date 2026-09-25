@@ -11,6 +11,8 @@ import {
 } from '@nestjs/common';
 import { ZodResponse } from 'nestjs-zod';
 import {
+  BulkCreateScheduleItemsDto,
+  BulkUpdateScheduleItemsDto,
   CreateScheduleItemDto,
   ScheduleItemDto,
   ScheduleItemsDto,
@@ -24,6 +26,18 @@ import { ApiParam } from '@nestjs/swagger';
 @Controller()
 export class ScheduleItemController {
   constructor(private readonly scheduleItemService: ScheduleItemService) {}
+
+  @Post('bulk')
+  @ZodResponse({ status: HttpStatus.OK, type: ScheduleItemsDto })
+  bulkCreateScheduleItems(
+    @Param('scheduleId') scheduleId: string,
+    @Body() bulkCreateScheduleItemDto: BulkCreateScheduleItemsDto,
+  ) {
+    return this.scheduleItemService.bulkCreateScheduleItems(
+      scheduleId,
+      bulkCreateScheduleItemDto,
+    );
+  }
 
   @Post()
   @ZodResponse({ status: HttpStatus.OK, type: ScheduleItemDto })
@@ -47,6 +61,16 @@ export class ScheduleItemController {
   @ZodResponse({ status: HttpStatus.OK, type: ScheduleItemDto })
   getScheduleItem(@Param('itemId') itemId: string) {
     return this.scheduleItemService.getScheduleItem(itemId);
+  }
+
+  @Patch('bulk')
+  @ZodResponse({ status: HttpStatus.OK, type: ScheduleItemsDto })
+  bulkUpdateScheduleItems(
+    @Body() bulkUpdateScheduleItemDto: BulkUpdateScheduleItemsDto,
+  ) {
+    return this.scheduleItemService.bulkUpdateScheduleItems(
+      bulkUpdateScheduleItemDto,
+    );
   }
 
   @Patch(':itemId')
