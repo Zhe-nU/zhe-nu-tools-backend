@@ -56,6 +56,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Run auth migrate
         env:
           AVITO_CLIENT_ID: ${{ secrets.AVITO_CLIENT_ID }}
@@ -85,6 +92,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Run db migrate
         env:
           AVITO_CLIENT_ID: ${{ secrets.AVITO_CLIENT_ID }}
@@ -113,6 +127,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy app
         env:
