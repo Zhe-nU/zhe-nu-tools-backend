@@ -27,7 +27,7 @@ services:
   auth-migrate:
     build:
       context: ./..
-      dockerfile: ./.docker/dockerfile.prod
+      dockerfile: ./.docker/dockerfile.migrate
     command: npm run auth:migrate
     environment:
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
@@ -44,7 +44,7 @@ services:
   db-migrate:
     build:
       context: ./..
-      dockerfile: ./.docker/dockerfile.prod
+      dockerfile: ./.docker/dockerfile.migrate
     command: npm run db:migrate
     environment:
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
