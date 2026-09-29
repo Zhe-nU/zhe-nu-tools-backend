@@ -6,47 +6,49 @@ on:
   pull_request:
     branches: ['main']
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_APP: ghcr.io/zhe-nu/zhe-nu-tools-backend
+  IMAGE_MIGRATE: ghcr.io/zhe-nu/zhe-nu-tools-backend-migrate
+
 jobs:
-  # lint:
-  #   runs-on: ubuntu-latest
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
-  #   strategy:
-  #     matrix:
-  #       node-version: [24.x]
+    steps:
+      - uses: actions/checkout@v4
 
-  #   steps:
-  #   - uses: actions/checkout@v4
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  #   - uses: actions/setup-node@v4
-  #     with:
-  #       node-version: ${{ matrix.node-version }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-  #   - name: lint
-  #     run: |
-  #       docker compose -f docker-compose-lint.yaml up
-  #       docker compose -f docker-compose-lint.yaml down --remove-orphans
+      - name: Build and push migrate image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .docker/dockerfile.migrate
+          push: true
+          tags: ${{ env.IMAGE_MIGRATE }}:latest
 
-  # test:
-  #   needs: lint
-  #   runs-on: ubuntu-latest
-
-  #   strategy:
-  #     matrix:
-  #       node-version: [24.x]
-
-  #   steps:
-  #   - uses: actions/checkout@v4
-
-  #   - uses: actions/setup-node@v4
-  #     with:
-  #       node-version: ${{ matrix.node-version }}
-
-  #   - name: test
-  #     run: |
-  #       docker compose -f docker-compose-test.yaml up
-  #       docker compose -f docker-compose-test.yaml down --remove-orphans
+      - name: Build and push app image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .docker/dockerfile.prod
+          push: true
+          tags: ${{ env.IMAGE_APP }}:latest
 
   auth-migrate:
+    needs: build-and-push
     runs-on: self-hosted
 
     environment: PROD
@@ -54,7 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Migrate
+      - name: Run auth migrate
         env:
           AVITO_CLIENT_ID: ${{ secrets.AVITO_CLIENT_ID }}
           AVITO_CLIENT_SECRET: ${{ secrets.AVITO_CLIENT_SECRET }}
@@ -71,7 +73,8 @@ jobs:
           CLIENT_URL: ${{ vars.CLIENT_URL }}
           PORT: ${{ vars.PORT }}
         run: |
-          docker compose -f ./.docker/docker-compose-prod.yaml run --rm --build auth-migrate
+          docker compose -f ./.docker/docker-compose-prod.yaml pull auth-migrate
+          docker compose -f ./.docker/docker-compose-prod.yaml run --rm auth-migrate
 
   migrate:
     needs: auth-migrate
@@ -82,7 +85,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Migrate
+      - name: Run db migrate
         env:
           AVITO_CLIENT_ID: ${{ secrets.AVITO_CLIENT_ID }}
           AVITO_CLIENT_SECRET: ${{ secrets.AVITO_CLIENT_SECRET }}
@@ -99,9 +102,10 @@ jobs:
           CLIENT_URL: ${{ vars.CLIENT_URL }}
           PORT: ${{ vars.PORT }}
         run: |
-          docker compose -f ./.docker/docker-compose-prod.yaml run --rm --build db-migrate
+          docker compose -f ./.docker/docker-compose-prod.yaml pull db-migrate
+          docker compose -f ./.docker/docker-compose-prod.yaml run --rm db-migrate
 
-  build:
+  deploy:
     needs: migrate
     runs-on: self-hosted
 
@@ -110,7 +114,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build and Deploy
+      - name: Deploy app
         env:
           AVITO_CLIENT_ID: ${{ secrets.AVITO_CLIENT_ID }}
           AVITO_CLIENT_SECRET: ${{ secrets.AVITO_CLIENT_SECRET }}
@@ -128,4 +132,5 @@ jobs:
           CLIENT_URL: ${{ vars.CLIENT_URL }}
           PORT: ${{ vars.PORT }}
         run: |
-          docker compose -f ./.docker/docker-compose-prod.yaml up -d --build
+          docker compose -f ./.docker/docker-compose-prod.yaml pull backend
+          docker compose -f ./.docker/docker-compose-prod.yaml up -d --no-build backend

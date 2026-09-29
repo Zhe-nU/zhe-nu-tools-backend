@@ -1,8 +1,7 @@
 services:
   backend:
-    build:
-      context: ./..
-      dockerfile: ./.docker/dockerfile.prod
+    image: ghcr.io/zhe-nu/zhe-nu-tools-backend:latest
+    pull_policy: always
     restart: unless-stopped
     environment:
       - AVITO_CLIENT_ID=${AVITO_CLIENT_ID}
@@ -14,7 +13,7 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_NAME=${DB_NAME}
       - DB_PASSWORD=${DB_PASSWORD}
-      - DB_PORT=${DB_PORT}}
+      - DB_PORT=${DB_PORT}
       - DB_USERNAME=${DB_USERNAME}
       - RESEND_API_KEY=${RESEND_API_KEY}
       - SENTRY_DSN=${SENTRY_DSN}
@@ -25,9 +24,8 @@ services:
       - '3000:3000'
 
   auth-migrate:
-    build:
-      context: ./..
-      dockerfile: ./.docker/dockerfile.migrate
+    image: ghcr.io/zhe-nu/zhe-nu-tools-backend-migrate:latest
+    pull_policy: always
     command: npm run auth:migrate
     environment:
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
@@ -42,9 +40,8 @@ services:
       - NODE_ENV=production
 
   db-migrate:
-    build:
-      context: ./..
-      dockerfile: ./.docker/dockerfile.migrate
+    image: ghcr.io/zhe-nu/zhe-nu-tools-backend-migrate:latest
+    pull_policy: always
     command: npm run db:migrate
     environment:
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
