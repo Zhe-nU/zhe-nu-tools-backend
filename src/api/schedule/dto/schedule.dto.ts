@@ -6,6 +6,7 @@ export class ScheduleDto extends createZodDto(
   z.object({
     id: z.uuid(),
     name: z.string().min(1),
+    description: z.string().nullish(),
   }),
   { codec: true },
 ) {}

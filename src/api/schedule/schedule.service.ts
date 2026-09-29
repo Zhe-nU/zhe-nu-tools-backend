@@ -24,7 +24,7 @@ export class ScheduleService {
     return await this.scheduleModel.create<Schedule>(
       {
         userId,
-        name: createScheduleDto.name,
+        ...createScheduleDto,
         items: [],
       },
       { include: [ScheduleItem] },
