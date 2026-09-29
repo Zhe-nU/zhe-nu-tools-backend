@@ -1,11 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AvitoWebhookPayloadDto } from './dto/avitoWebhookPayload.dto';
+import dayjs from '../../lib/dayjs';
 import { AvitoSessionService } from '../../lib/avitoSession/avitoSession.service';
 import { AvitoAPIService } from 'src/lib/avitoAPI/avitoAPI.service';
 import { BotService } from '../bot/bot.service';
 import { AvitoUserService } from 'src/lib/avitoUser/avitoUser.service';
-import dayjs from 'dayjs';
 import replacePlaceholders from 'src/utils/replacePlaceholders';
+import { isHourTimeBetween, isNowWeekDay } from 'src/utils/compareDateTime';
+import { AvitoWebhookDto } from './dto/avitoWebhook.dto';
 
 @Injectable()
 export class WebhookService {
@@ -16,14 +17,22 @@ export class WebhookService {
     private readonly botService: BotService,
   ) {}
 
-  async avito({ payload }: AvitoWebhookPayloadDto) {
+  async avito({ payload }: AvitoWebhookDto) {
     const user = await this.avitoUserService.getUserByAvitoId(
       payload.value.userId.toString(),
     );
     if (!user) throw new NotFoundException('USER_NOT_FOUND');
 
-    const botSettings = await this.botService.getBotSettings(user.id);
+    const bots = await this.botService.getUserBots(user.id);
+    const currentBot = bots.find(
+      (b) => b.avitoUserId === payload.value.userId.toString(),
+    );
+    if (!currentBot) throw new NotFoundException('BOT_NOT_FOUND');
+
+    const botSettings = await this.botService.getBotSettings(currentBot.id);
     if (!botSettings) throw new NotFoundException('BOT_SETTINGS_NOT_FOUND');
+
+    const botSchedules = await this.botService.getBotSchedules(currentBot.id);
 
     const avitoSession =
       await this.avitoSessionService.getAvitoSessionByAvitoUserId(
@@ -56,9 +65,14 @@ export class WebhookService {
     );
     if (!interlocutor) throw new NotFoundException('AVITO_USER_NOT_FOUND');
 
-    const template = botSettings.weekDayText.find((wdt) =>
-      wdt.days.includes(dayjs().format('ddd').toLocaleLowerCase()),
-    )?.text;
+    const template = botSchedules
+      .map((s) => s.items)
+      .flat()
+      .find(
+        (i) =>
+          isNowWeekDay(i.weekDay) &&
+          isHourTimeBetween(i.startTime, i.endTime, dayjs().format('HH:mm')),
+      )?.text;
     if (!template) return;
 
     const replacedText = replacePlaceholders(template, {

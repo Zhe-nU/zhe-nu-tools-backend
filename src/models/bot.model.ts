@@ -1,16 +1,20 @@
 import {
   BeforeCreate,
   BelongsTo,
+  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
-  Model,
   Table,
 } from 'sequelize-typescript';
 import { User } from './user.model';
+import { BaseModel } from './base.model';
+import { Schedule } from './schedule.model';
+import { BotSchedule } from './botSchedule.model';
+import { AvitoUser } from './avitoUser.model';
 
-@Table({ tableName: 'bot', timestamps: false })
-export class Bot extends Model {
+@Table({ tableName: 'bot' })
+export class Bot extends BaseModel {
   @ForeignKey(() => User)
   @Column
   declare userId: string;
@@ -18,15 +22,24 @@ export class Bot extends Model {
   @BelongsTo(() => User)
   declare user: User;
 
+  @ForeignKey(() => AvitoUser)
+  @Column
+  declare avitoUserId: string;
+
+  @BelongsTo(() => AvitoUser)
+  declare avitoUser: AvitoUser;
+
   @Column({
     type: DataType.JSONB,
   })
   declare settings: {
     answerOnFirstMessage: boolean;
-    chatTypes: string[];
+    chatTypes: Array<'u2i' | 'u2u'>;
     isActive: boolean;
-    weekDayText: Array<{ days: string[]; text: string }>;
   };
+
+  @BelongsToMany(() => Schedule, () => BotSchedule)
+  declare schedules: Schedule[];
 
   @BeforeCreate
   static settingsDefault(instance: Bot) {
@@ -34,7 +47,6 @@ export class Bot extends Model {
       answerOnFirstMessage: true,
       chatTypes: [],
       isActive: false,
-      weekDayText: [],
     };
 
     instance.settings = {

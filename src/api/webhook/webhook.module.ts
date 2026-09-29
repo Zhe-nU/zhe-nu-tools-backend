@@ -7,6 +7,7 @@ import { AvitoSessionModule } from 'src/lib/avitoSession/avitoSession.module';
 import { AvitoAPIModule } from 'src/lib/avitoAPI/avitoAPI.module';
 import { BotModule } from '../bot/bot.module';
 import { AvitoUserModule } from 'src/lib/avitoUser/avitoUser.module';
+import { ScheduleModule } from '../schedule/schedule.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AvitoUserModule } from 'src/lib/avitoUser/avitoUser.module';
     AvitoSessionModule,
     AvitoUserModule,
     BotModule,
+    ScheduleModule,
     SequelizeModule.forFeature([AvitoSession]),
   ],
   controllers: [WebhookController],

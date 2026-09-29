@@ -2,6 +2,7 @@
   "compilerOptions": {
     "jsx": "react",
     "module": "nodenext",
+    "allowJs": true,
     "moduleResolution": "nodenext",
     "resolvePackageJsonExports": true,
     "esModuleInterop": true,
