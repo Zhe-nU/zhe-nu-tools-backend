@@ -6,8 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "auth:generate": "npx auth@latest generate --config ./src/lib/auth.ts",
-    "auth:migrate": "npx auth@latest migrate --config ./src/lib/auth.ts  --yes",
+    "auth:generate": "npx auth generate --config ./src/lib/auth.ts",
+    "auth:migrate": "npx auth migrate --config ./src/lib/auth.ts --yes",
     "build": "nest build",
     "db:migrate": "sequelize-cli db:migrate",
     "email:dev": "email dev --dir ./src/templates",
@@ -87,7 +87,8 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0"
+    "typescript-eslint": "^8.20.0",
+    "auth": "^1.6.23"
   },
   "jest": {
     "moduleFileExtensions": [

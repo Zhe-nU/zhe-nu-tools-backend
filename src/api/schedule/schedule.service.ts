@@ -3,7 +3,11 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { Schedule } from 'src/models/schedule.model';
 import { ScheduleItem } from 'src/models/scheduleItem.model';
-import { CreateScheduleDto, UpdateScheduleDto } from './dto/schedule.dto';
+import {
+  CreateScheduleDto,
+  ScheduleWithItemsDto,
+  UpdateScheduleDto,
+} from './dto/schedule.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -16,27 +20,15 @@ export class ScheduleService {
   async createSchedule(
     userId: string,
     createScheduleDto: CreateScheduleDto,
-  ): Promise<Schedule> {
-    return await this.sequelize.transaction(async (t) => {
-      const schedule = await this.scheduleModel.create<Schedule>(
-        {
-          userId,
-          name: createScheduleDto.name,
-        },
-        { transaction: t },
-      );
-
-      if (createScheduleDto.items?.length)
-        await this.scheduleItemModel.bulkCreate(
-          createScheduleDto.items?.map((i) => ({
-            ...i,
-            scheduleId: schedule.id,
-          })),
-          { transaction: t },
-        );
-
-      return schedule.reload({ include: [ScheduleItem], transaction: t });
-    });
+  ): Promise<ScheduleWithItemsDto> {
+    return await this.scheduleModel.create<Schedule>(
+      {
+        userId,
+        ...createScheduleDto,
+        items: [],
+      },
+      { include: [ScheduleItem] },
+    );
   }
 
   async deleteSchedule(scheduleId: string) {
@@ -65,45 +57,15 @@ export class ScheduleService {
   async updateSchedule(
     scheduleId: string,
     updateScheduleDto: UpdateScheduleDto,
-  ): Promise<Schedule> {
-    const updatedSchedule = await this.sequelize.transaction(async (t) => {
-      const schedule = await this.scheduleModel.findByPk(scheduleId);
-      if (!schedule) throw new NotFoundException('SCHEDULE_NOT_FOUND');
-
-      if (updateScheduleDto.items) {
-        await this.scheduleItemModel.destroy({
-          where: { scheduleId },
-          transaction: t,
-        });
-
-        await this.scheduleItemModel.bulkCreate(
-          updateScheduleDto.items?.map((s) => ({
-            scheduleId,
-            ...s,
-          })) || [],
-          {
-            updateOnDuplicate: [
-              'scheduleId',
-              'weekDay',
-              'startTime',
-              'endTime',
-            ],
-            transaction: t,
-          },
-        );
-      }
-
-      await schedule.update(updateScheduleDto, {
-        where: { id: scheduleId },
-        transaction: t,
-      });
-
-      return schedule.reload({
-        include: [ScheduleItem],
-      });
+  ): Promise<ScheduleWithItemsDto> {
+    const schedule = await this.scheduleModel.findByPk(scheduleId, {
+      include: [ScheduleItem],
     });
+    if (!schedule) throw new NotFoundException();
 
-    return updatedSchedule;
+    return await schedule.update(updateScheduleDto, {
+      returning: true,
+    });
   }
 
   async userScheduleList(userId: string): Promise<Schedule[]> {

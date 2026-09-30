@@ -4,6 +4,7 @@ import {
   Column,
   ForeignKey,
   HasMany,
+  NotNull,
   Table,
 } from 'sequelize-typescript';
 import { BaseModel } from './base.model';
@@ -22,6 +23,8 @@ export class Schedule extends BaseModel {
   declare user: User;
 
   @Column declare name: string;
+
+  @Column declare description: string;
 
   @BelongsToMany(() => Bot, () => BotSchedule)
   declare bots: Bot[];

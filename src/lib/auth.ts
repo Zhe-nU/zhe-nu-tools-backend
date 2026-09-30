@@ -18,6 +18,7 @@ export const auth = betterAuth({
       generateId: 'uuid',
     },
   },
+  baseURL: process.env.BACKEND_URL || 'http://localhost:3011',
   database: new Pool({
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT),

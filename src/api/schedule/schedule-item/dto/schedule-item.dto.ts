@@ -1,31 +1,19 @@
+import dayjs from 'dayjs';
 import { createZodDto } from 'nestjs-zod';
 import { weekDays } from 'src/models/scheduleItem.model';
+import { TimeDto, TimeStringDto } from 'src/shared/dto/time.dto';
 import z from 'zod';
 
 export class ScheduleItemDto extends createZodDto(
   z.object({
     id: z.uuid(),
     weekDay: z.enum(weekDays),
-    startTime: z
-      .string()
-      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/)
-      .optional()
-      .meta({ deprecated: true }),
-    endTime: z
-      .string()
-      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/)
-      .optional()
-      .meta({ deprecated: true }),
+    startTime: TimeStringDto.optional().meta({ deprecated: true }),
+    endTime: TimeStringDto.optional().meta({ deprecated: true }),
     time: z
       .object({
-        startTime: z.object({
-          hours: z.int().min(0).max(23),
-          minutes: z.int().min(0).max(59),
-        }),
-        endTime: z.object({
-          hours: z.int().min(0).max(23),
-          minutes: z.int().min(0).max(59),
-        }),
+        startTime: TimeDto,
+        endTime: TimeDto,
       })
       .refine(
         (data) => {
@@ -34,10 +22,7 @@ export class ScheduleItemDto extends createZodDto(
           return start < end;
         },
         { message: 'endTime must be after startTime' },
-      )
-      .meta({
-        description: 'Объект с временем начала и окончания в формате [HH, MM]',
-      }),
+      ),
     text: z.string().min(1),
   }),
   { codec: true },
@@ -49,11 +34,64 @@ export class ScheduleItemsDto extends createZodDto(
 ) {}
 
 export class CreateScheduleItemDto extends createZodDto(
-  ScheduleItemDto.schema.omit({ id: true }),
+  ScheduleItemDto.schema
+    .omit({ id: true })
+    .transform((data) => {
+      if (data.endTime === undefined)
+        data.endTime = dayjs()
+          .hour(data.time.endTime.hours)
+          .minute(data.time.endTime.minutes)
+          .format('HH:mm');
+
+      if (data.startTime === undefined)
+        data.startTime = dayjs()
+          .hour(data.time.startTime.hours)
+          .minute(data.time.startTime.minutes)
+          .format('HH:mm');
+
+      return data;
+    })
+    .meta({
+      title: 'CreateScheduleItemDto',
+      description: 'Объект с данными для создания части расписания',
+    }),
+  { codec: true },
+) {}
+
+export class BulkCreateScheduleItemsDto extends createZodDto(
+  z.object({ items: z.array(CreateScheduleItemDto.schema) }),
   { codec: true },
 ) {}
 
 export class UpdateScheduleItemDto extends createZodDto(
-  CreateScheduleItemDto.schema.partial(),
+  ScheduleItemDto.schema
+    .partial()
+    .extend({
+      id: z.uuid(),
+    })
+    .transform((data) => {
+      if (data.endTime === undefined)
+        data.endTime = dayjs()
+          .hour(data.time?.endTime.hours || 0)
+          .minute(data.time?.endTime.minutes || 0)
+          .format('HH:mm');
+
+      if (data.startTime === undefined)
+        data.startTime = dayjs()
+          .hour(data.time?.startTime.hours || 0)
+          .minute(data.time?.startTime.minutes || 0)
+          .format('HH:mm');
+
+      return data;
+    })
+    .meta({
+      title: 'UpdateScheduleItemDto',
+      description: 'Объект с данными для обновления части расписания',
+    }),
+  { codec: true },
+) {}
+
+export class BulkUpdateScheduleItemsDto extends createZodDto(
+  z.object({ items: z.array(UpdateScheduleItemDto.schema) }),
   { codec: true },
 ) {}

@@ -1,14 +1,12 @@
 import { createZodDto } from 'nestjs-zod';
 import z from 'zod';
-import {
-  CreateScheduleItemDto,
-  ScheduleItemDto,
-} from '../schedule-item/dto/schedule-item.dto';
+import { ScheduleItemDto } from '../schedule-item/dto/schedule-item.dto';
 
 export class ScheduleDto extends createZodDto(
   z.object({
     id: z.uuid(),
     name: z.string().min(1),
+    description: z.string().nullish(),
   }),
   { codec: true },
 ) {}
@@ -28,7 +26,7 @@ export class SchedulesWithItemsDto extends createZodDto(
 export class CreateScheduleDto extends createZodDto(
   z.object({
     name: z.string().min(1),
-    items: z.array(CreateScheduleItemDto.schema).optional(),
+    description: z.string().optional(),
   }),
   { codec: true },
 ) {}

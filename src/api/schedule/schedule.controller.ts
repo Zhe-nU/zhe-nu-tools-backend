@@ -14,7 +14,6 @@ import { ScheduleService } from './schedule.service';
 import { Schedule } from 'src/models/schedule.model';
 import {
   CreateScheduleDto,
-  ScheduleDto,
   SchedulesWithItemsDto,
   ScheduleWithItemsDto,
   UpdateScheduleDto,
@@ -30,16 +29,16 @@ export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
   @Post()
-  @ZodResponse({ status: HttpStatus.OK, type: ScheduleDto })
+  @ZodResponse({ status: HttpStatus.OK, type: ScheduleWithItemsDto })
   async createSchedule(
     @Param('userId') userId: string,
     @Body()
     createScheduleDto: CreateScheduleDto,
-  ): Promise<Schedule> {
+  ): Promise<ScheduleWithItemsDto> {
     return this.scheduleService.createSchedule(userId, createScheduleDto);
   }
 
-  @Get()
+  @Get('/')
   @ZodResponse({ status: HttpStatus.OK, type: SchedulesWithItemsDto })
   userScheduleList(@Param('userId') userId: string): Promise<Schedule[]> {
     return this.scheduleService.userScheduleList(userId);
@@ -57,7 +56,7 @@ export class ScheduleController {
     @Param('scheduleId') scheduleId: string,
     @Body()
     updateScheduleDto: UpdateScheduleDto,
-  ): Promise<Schedule> {
+  ): Promise<ScheduleWithItemsDto> {
     return this.scheduleService.updateSchedule(scheduleId, updateScheduleDto);
   }
 
