@@ -34,7 +34,6 @@ export class AvitoWebhookDto extends createZodDto(
       }),
     })
     .meta({
-      id: 'AvitoWebhook',
       description: 'Payload, который присылает Avito в вебхуке',
     }),
   { codec: true },

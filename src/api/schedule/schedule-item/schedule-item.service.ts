@@ -22,11 +22,21 @@ export class ScheduleItemService {
     scheduleId: string,
     bulkCreateScheduleItemDto: BulkCreateScheduleItemsDto,
   ): Promise<ScheduleItem[]> {
-    const items = await this.scheduleItemModel.bulkCreate(
-      bulkCreateScheduleItemDto.items.map((dto) => ({ scheduleId, ...dto })),
-      { updateOnDuplicate: ['id'] },
-    );
-    return items;
+    const items = bulkCreateScheduleItemDto.items.map((dto) => ({
+      scheduleId,
+      ...dto,
+      deletedAt: null,
+    }));
+
+    const newItems = await this.sequelize.transaction(async (t) => {
+      return await this.scheduleItemModel.bulkCreate(items, {
+        updateOnDuplicate: ['text', 'deletedAt'],
+        returning: true,
+        transaction: t,
+      });
+    });
+
+    return newItems;
   }
 
   async bulkUpdateScheduleItems(
