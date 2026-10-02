@@ -1,13 +1,16 @@
 import { HttpService } from '@nestjs/axios';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
-import * as changeKeys from 'change-case/keys';
 import { AvitoSessionService } from '../avitoSession/avitoSession.service';
 import {
   avitoChatMessagesDto,
   AvitoChatMessagesDto,
 } from './dto/avitoChatMessages.dto';
 import { AvitoChatDataDto } from './dto/avitoChatData.dto';
+import {
+  ApiAvitoItemResponse,
+  apiAvitoItemsResponseSchema,
+} from 'src/api/avito-items/dto/api-avito-items.dto';
 
 type RESTAvitoTokenData = {
   access_token: string;
@@ -25,50 +28,10 @@ type RESTAvitoUserData = {
   profile_url: string;
 };
 
-type RESTAvitoUserItemsData = {
-  meta: {
-    page: number;
-    per_page: number;
-  };
-  resources: [
-    {
-      address: string;
-      category: {
-        id: number;
-        name: string;
-      };
-      id: number;
-      price: number;
-      status: string;
-      title: string;
-      url: string;
-    },
-  ];
-};
-
-type AvitoUserItemsData = {
-  meta: {
-    page: number;
-    per_page: number;
-  };
-  resources: [
-    {
-      address: string;
-      category: {
-        id: number;
-        name: string;
-      };
-      id: number;
-      price: number;
-      status: string;
-      title: string;
-      url: string;
-    },
-  ];
-};
-
 @Injectable()
 export class AvitoAPIService {
+  private readonly logger = new Logger(AvitoAPIService.name);
+
   constructor(
     @Inject(forwardRef(() => AvitoSessionService))
     private readonly avitoSessionService: AvitoSessionService,
@@ -232,23 +195,29 @@ export class AvitoAPIService {
       updatedAtFrom?: string;
       category?: number;
     },
-  ): Promise<AvitoUserItemsData> {
+  ): Promise<ApiAvitoItemResponse> {
     const accessToken =
       await this.avitoSessionService.getAccessTokenByAvitoId(avitoId);
 
-    const { data } = await firstValueFrom(
-      this.httpService.get<RESTAvitoUserItemsData>(
-        'https://api.avito.ru/core/v1/items',
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          params: params && changeKeys.snakeCase(params),
+    const data = await firstValueFrom(
+      this.httpService.get('https://api.avito.ru/core/v1/items', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         },
-      ),
+        params: params && {
+          per_page: params.perPage,
+          ...params,
+        },
+      }),
     );
 
-    return changeKeys.camelCase(data) as AvitoUserItemsData;
+    const parsed = apiAvitoItemsResponseSchema.safeParse(data);
+    if (!parsed.success) {
+      this.logger.error('Avito API contract violation', parsed.error);
+      throw new Error('Unexpected response from Avito API');
+    }
+
+    return parsed.data;
   }
 
   async refreshToken(refreshToken: string) {
